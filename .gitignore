@@ -52,3 +52,15 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Claude
+CLAUDE.md
+
+#Architecture Information
+*.docx
+
+# Visual Studio
+.vs/
+
+# User-specific files
+*.user

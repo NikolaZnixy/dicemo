@@ -256,7 +256,7 @@ public class AppDbContext : IdentityDbContext<User, IdentityRole<int>, int>
                 .HasMaxLength(EntityConstants.PitchPhoto.UrlMaxLength);
 
             e.HasOne(p => p.Pitch)
-                .WithMany()
+                .WithMany(p => p.Photos)
                 .HasForeignKey(p => p.PitchId)
                 .OnDelete(DeleteBehavior.Cascade);
 

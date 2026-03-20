@@ -17,17 +17,20 @@ public class PitchStore
     public async Task<Pitch?> GetByIdAsync(int id) =>
         await _context.Pitches
             .Include(p => p.SubmittedBy)
+            .Include(p => p.Photos)
             .FirstOrDefaultAsync(p => p.Id == id);
 
     public async Task<List<Pitch>> GetAllAsync() =>
         await _context.Pitches
             .Include(p => p.SubmittedBy)
+            .Include(p => p.Photos)
             .OrderBy(p => p.Name)
             .ToListAsync();
 
     public async Task<List<Pitch>> GetVerifiedAsync() =>
         await _context.Pitches
             .Include(p => p.SubmittedBy)
+            .Include(p => p.Photos)
             .Where(p => p.Status == PitchStatusEnum.Verified)
             .OrderBy(p => p.Name)
             .ToListAsync();

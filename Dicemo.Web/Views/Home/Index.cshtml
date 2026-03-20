@@ -1,8 +1,91 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+@{
+    ViewData["Title"] = "Dobrodošli";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- HERO: two-column -->
+<div class="uv-home-hero">
+    <div class="row g-5 align-items-center">
+
+        <!-- LEFT: Headline + Stats -->
+        <div class="col-md-6">
+            <h2 class="uv-home-headline">
+                Želiš igrat<span class="uv-brand-i">&#x131;</span><br>
+                a nemaš<br>
+                ekipu<span class="uv-brand-q">?</span>
+            </h2>
+            <div class="uv-home-stats" style="justify-content: flex-start;">
+                <div class="uv-home-stat">
+                    <span class="uv-home-stat-val">@ViewBag.PlayerCount</span>
+                    <span class="uv-home-stat-label">Igrača</span>
+                </div>
+                <div class="uv-home-stat-divider"></div>
+                <div class="uv-home-stat">
+                    <span class="uv-home-stat-val">@ViewBag.PitchCount</span>
+                    <span class="uv-home-stat-label">Terena</span>
+                </div>
+                <div class="uv-home-stat-divider"></div>
+                <div class="uv-home-stat">
+                    <span class="uv-home-stat-val">@ViewBag.OpenMatchCount</span>
+                    <span class="uv-home-stat-label">Otvorenih utakmica</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Brand + CTAs -->
+        <div class="col-md-6 text-center">
+            <h1 class="uv-home-brand-name">
+                D<span class="uv-brand-i">&#x131;</span>cemo<span class="uv-brand-q">?</span>
+            </h1>
+            <div class="uv-home-ctas mt-4">
+                <a href="#" class="uv-btn uv-btn-filled uv-btn-lg">
+                    <i class="fa-solid fa-futbol"></i>
+                    Pronađi utakmicu
+                </a>
+                <a asp-controller="Pitch" asp-action="Index" class="uv-btn uv-btn-outline uv-btn-lg">
+                    <i class="fa-solid fa-location-dot"></i>
+                    Pregledaj terene
+                </a>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- FEATURE CARDS -->
+<div class="uv-section-label mb-3">
+    <i class="fa-solid fa-compass" style="color: var(--uv-text-dim); font-size: 14px;"></i>
+    <span class="uv-label-text">Istraži</span>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <a href="#" class="uv-feature-card">
+            <div class="uv-feature-icon" style="background: var(--uv-secondary-dim); color: var(--uv-secondary);">
+                <i class="fa-solid fa-futbol"></i>
+            </div>
+            <div class="uv-feature-title">Utakmice</div>
+            <p class="uv-feature-desc">Pronađi otvorene utakmice, pridruži se ekipi ili organiziraj svoju igru.</p>
+            <span class="uv-feature-link">Pregledaj utakmice <i class="fa-solid fa-arrow-right fa-xs"></i></span>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Pitch" asp-action="Index" class="uv-feature-card">
+            <div class="uv-feature-icon" style="background: var(--uv-success-dim); color: var(--uv-success);">
+                <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <div class="uv-feature-title">Tereni</div>
+            <p class="uv-feature-desc">Istraži terene u gradu &mdash; trava, astro, beton ili zatvoreni. Pronađi savršeno mjesto.</p>
+            <span class="uv-feature-link">Pregledaj terene <i class="fa-solid fa-arrow-right fa-xs"></i></span>
+        </a>
+    </div>
+    <div class="col-md-4">
+        <a asp-controller="Player" asp-action="Index" class="uv-feature-card">
+            <div class="uv-feature-icon" style="background: var(--uv-primary-dim); color: var(--uv-primary);">
+                <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="uv-feature-title">Igrači</div>
+            <p class="uv-feature-desc">Upoznaj zajednicu &mdash; pregledaj profile igrača, ocjene i statistike.</p>
+            <span class="uv-feature-link">Pregledaj igrače <i class="fa-solid fa-arrow-right fa-xs"></i></span>
+        </a>
+    </div>
 </div>

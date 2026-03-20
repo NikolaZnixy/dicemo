@@ -25,4 +25,5 @@ public class Pitch : BaseEntity
     public int SubmittedByUserId { get; set; }
 
     public User SubmittedBy { get; set; } = null!;
+    public List<PitchPhoto> Photos { get; set; } = new();
 }

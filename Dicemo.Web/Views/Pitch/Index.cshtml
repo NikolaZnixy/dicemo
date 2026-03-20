@@ -1,0 +1,231 @@
+@model List<Pitch>
+@using Microsoft.AspNetCore.Mvc.Rendering
+
+@{
+    ViewData["Title"] = "Tereni";
+
+    SurfaceEnum? surf = ViewBag.Surface;
+    PitchSizeEnum? sz = ViewBag.Size;
+    string? q = ViewBag.Q;
+
+    bool anyFilter = !string.IsNullOrEmpty(q) || surf.HasValue || sz.HasValue;
+
+    var surfaceOptions = new SelectList(new[]
+    {
+        new SelectListItem("Sve podloge", ""),
+        new SelectListItem("Trava", "0"),
+        new SelectListItem("Astro", "1"),
+        new SelectListItem("Beton", "2"),
+        new SelectListItem("Zatvoreni", "3"),
+    }, "Value", "Text", surf.HasValue ? ((int)surf.Value).ToString() : "");
+
+    var sizeOptions = new SelectList(new[]
+    {
+        new SelectListItem("Sve veličine", ""),
+        new SelectListItem("5v5", "0"),
+        new SelectListItem("7v7", "1"),
+        new SelectListItem("11v11", "2"),
+    }, "Value", "Text", sz.HasValue ? ((int)sz.Value).ToString() : "");
+
+    string SurfaceLabel(SurfaceEnum s) => s switch
+    {
+        SurfaceEnum.Grass    => "Trava",
+        SurfaceEnum.Turf     => "Astro",
+        SurfaceEnum.Concrete => "Beton",
+        SurfaceEnum.Indoor   => "Zatvoreni",
+        _                    => s.ToString()
+    };
+
+    string SizeLabel(PitchSizeEnum s) => s switch
+    {
+        PitchSizeEnum.FiveVFive     => "5v5",
+        PitchSizeEnum.SevenVSeven   => "7v7",
+        PitchSizeEnum.ElevenVEleven => "11v11",
+        _                           => s.ToString()
+    };
+
+    string SurfaceIcon(SurfaceEnum s) => s switch
+    {
+        SurfaceEnum.Grass    => "fa-leaf",
+        SurfaceEnum.Turf     => "fa-border-all",
+        SurfaceEnum.Concrete => "fa-square",
+        SurfaceEnum.Indoor   => "fa-warehouse",
+        _                    => "fa-circle"
+    };
+
+    string SurfaceCss(SurfaceEnum s) => s switch
+    {
+        SurfaceEnum.Grass    => "uv-pitch-surface-grass",
+        SurfaceEnum.Turf     => "uv-pitch-surface-turf",
+        SurfaceEnum.Concrete => "uv-pitch-surface-concrete",
+        SurfaceEnum.Indoor   => "uv-pitch-surface-indoor",
+        _                    => ""
+    };
+
+    string StatusLabel(PitchStatusEnum s) => s switch
+    {
+        PitchStatusEnum.Verified    => "Verificiran",
+        PitchStatusEnum.Pending     => "Na čekanju",
+        PitchStatusEnum.Rejected    => "Odbijen",
+        PitchStatusEnum.Unavailable => "Nedostupan",
+        _                           => s.ToString()
+    };
+
+    string StatusTag(PitchStatusEnum s) => s switch
+    {
+        PitchStatusEnum.Verified    => "uv-tag-success",
+        PitchStatusEnum.Pending     => "uv-tag-warning",
+        PitchStatusEnum.Rejected    => "uv-tag-danger",
+        PitchStatusEnum.Unavailable => "uv-tag-accent",
+        _                           => "uv-tag-primary"
+    };
+}
+
+<!-- Page header -->
+<div class="uv-page-header">
+    <h1 class="uv-page-title">
+        <i class="fa-solid fa-location-dot me-2" style="color: var(--uv-success);"></i>Tereni
+    </h1>
+    <p class="uv-page-subtitle">@Model.Count @(Model.Count == 1 ? "teren pronađen" : "terena pronađeno")</p>
+</div>
+
+<!-- Search + Filter bar -->
+<form method="get" id="filterForm" class="uv-card-surface mb-4">
+    <!-- Search input -->
+    <div class="position-relative mb-3">
+        <i class="fa-solid fa-magnifying-glass position-absolute"
+           style="left: 14px; top: 50%; transform: translateY(-50%); color: var(--uv-text-dim); pointer-events: none;"></i>
+        <input type="text" name="q" class="uv-input" style="padding-left: 42px;"
+               placeholder="Pretraži po imenu ili adresi..." value="@q" />
+    </div>
+
+    <!-- Filter row -->
+    <div class="d-flex flex-wrap gap-2 align-items-center">
+
+        <select name="surface" class="form-select w-auto" style="min-width: 155px;"
+                asp-items="surfaceOptions" onchange="this.form.submit()"></select>
+
+        <select name="size" class="form-select w-auto" style="min-width: 145px;"
+                asp-items="sizeOptions" onchange="this.form.submit()"></select>
+
+        <button type="button"
+                class="uv-filter-chip @(surf == SurfaceEnum.Indoor ? "active" : "")"
+                onclick="toggleSurface('3')">
+            <i class="fa-solid fa-warehouse"></i> Zatvoreni teren
+        </button>
+
+        <button type="submit" class="uv-btn uv-btn-filled uv-btn-sm ms-auto">
+            <i class="fa-solid fa-magnifying-glass"></i> Traži
+        </button>
+
+        @if (anyFilter)
+        {
+            <a asp-action="Index" class="uv-btn uv-btn-sm" style="border: 1px solid var(--uv-border); color: var(--uv-text-dim);">
+                <i class="fa-solid fa-xmark"></i> Poništi
+            </a>
+        }
+    </div>
+</form>
+
+<!-- Pitch grid / empty state -->
+@if (Model.Count == 0)
+{
+    <div class="uv-card text-center py-5">
+        <i class="fa-solid fa-location-dot mb-3 d-block" style="font-size: 48px; color: var(--uv-border);"></i>
+        <p class="mb-1" style="font-size: 16px; font-weight: 700;">Nema terena</p>
+        <p class="mb-0" style="color: var(--uv-text-dim); font-size: 14px;">Pokušaj promijeniti filtre pretrage.</p>
+    </div>
+}
+else
+{
+    <div class="row g-3">
+        @foreach (var pitch in Model)
+        {
+            var photo = pitch.Photos.FirstOrDefault();
+
+            <div class="col-md-6 col-lg-4">
+                <div class="uv-card h-100 d-flex flex-column" style="position: relative; overflow: hidden;">
+
+                    <!-- Photo or fallback icon box -->
+                    @if (photo is not null)
+                    {
+                        <div class="uv-pitch-photo">
+                            <img src="@photo.Url" alt="@pitch.Name" loading="lazy" />
+                            <div class="uv-pitch-photo-overlay"></div>
+                            <span class="uv-tag @StatusTag(pitch.Status) uv-pitch-status-badge">@StatusLabel(pitch.Status)</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="uv-pitch-surface-box @SurfaceCss(pitch.Surface) mb-3">
+                            <i class="fa-solid @SurfaceIcon(pitch.Surface)"></i>
+                        </div>
+                        <span class="uv-tag @StatusTag(pitch.Status) mb-2" style="align-self: flex-start;">@StatusLabel(pitch.Status)</span>
+                    }
+
+                    <!-- Name -->
+                    <h3 style="font-size: 16px; font-weight: 800; margin: 0 0 6px;">@pitch.Name</h3>
+
+                    <!-- Address -->
+                    <p style="font-size: 13px; color: var(--uv-text-dim); margin-bottom: 14px;">
+                        <i class="fa-solid fa-location-dot fa-xs me-1"></i>@pitch.Address
+                    </p>
+
+                    <!-- Tags: Size + Surface -->
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="uv-tag uv-tag-accent">@SizeLabel(pitch.Size)</span>
+                        <span class="uv-tag uv-tag-primary">@SurfaceLabel(pitch.Surface)</span>
+                    </div>
+
+                    <!-- Amenities -->
+                    @{
+                        bool anyAmenity = pitch.HasLighting || pitch.HasParking || pitch.HasChangingRooms;
+                    }
+                    @if (anyAmenity)
+                    {
+                        <div class="d-flex flex-wrap gap-3 mb-3" style="font-size: 12px;">
+                            @if (pitch.HasLighting)
+                            {
+                                <span style="color: var(--uv-warning);">
+                                    <i class="fa-solid fa-lightbulb fa-sm me-1"></i>Rasvjeta
+                                </span>
+                            }
+                            @if (pitch.HasParking)
+                            {
+                                <span style="color: var(--uv-primary);">
+                                    <i class="fa-solid fa-square-parking fa-sm me-1"></i>Parking
+                                </span>
+                            }
+                            @if (pitch.HasChangingRooms)
+                            {
+                                <span style="color: var(--uv-accent);">
+                                    <i class="fa-solid fa-shirt fa-sm me-1"></i>Svlačionice
+                                </span>
+                            }
+                        </div>
+                    }
+
+                    <!-- Footer -->
+                    <div class="d-flex justify-content-between align-items-center mt-auto pt-3"
+                         style="border-top: 1px solid var(--uv-border);">
+                        <span style="font-size: 12px; color: var(--uv-text-dim);">
+                            <i class="fa-solid fa-futbol fa-xs me-1"></i>@pitch.MatchesPlayedCount utakmica
+                        </span>
+                        <a href="#" class="uv-btn uv-btn-outline uv-btn-sm">Detalji</a>
+                    </div>
+
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function toggleSurface(value) {
+            var select = document.querySelector('[name="surface"]');
+            select.value = select.value === value ? '' : value;
+            document.getElementById('filterForm').submit();
+        }
+    </script>
+}

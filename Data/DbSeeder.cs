@@ -202,6 +202,19 @@ public static class DbSeeder
         await context.SaveChangesAsync();
 
         // ---------------------------------------------------------------
+        // Pitch Photos
+        // ---------------------------------------------------------------
+        var pitchPhotos = new List<PitchPhoto>
+        {
+            new() { PitchId = salata.Id,  UploadedByUserId = luka.Id,     Url = "https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=800&q=80", UploadedAt = DateTime.UtcNow },
+            new() { PitchId = spansko.Id, UploadedByUserId = marko.Id,    Url = "https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80", UploadedAt = DateTime.UtcNow },
+            new() { PitchId = siget.Id,   UploadedByUserId = tomislav.Id, Url = "https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=800&q=80", UploadedAt = DateTime.UtcNow },
+        };
+
+        context.PitchPhotos.AddRange(pitchPhotos);
+        await context.SaveChangesAsync();
+
+        // ---------------------------------------------------------------
         // Matches
         // ---------------------------------------------------------------
         var openMatch = new Match

@@ -55,9 +55,11 @@ nunit-*.xml
 
 # Claude
 CLAUDE.md
+.claude/
 
 #Architecture Information
 *.docx
+*.jsx
 
 # Visual Studio
 .vs/

@@ -1,0 +1,199 @@
+@using Microsoft.AspNetCore.Identity
+@using Data.Models
+@inject SignInManager<User> SignInManager
+@inject UserManager<User> UserManager
+
+@{
+    var controller = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var isLoggedIn  = SignInManager.IsSignedIn(User);
+    var currentUser = isLoggedIn ? await UserManager.GetUserAsync(User) : null;
+    var initials    = currentUser is not null
+        ? $"{currentUser.FirstName[0]}{currentUser.LastName[0]}"
+        : "";
+}
+
+<!DOCTYPE html>
+<html lang="hr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – Dic&#x131;cemo?</title>
+
+    <!-- Outfit font -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- UV Theme -->
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Dicemo.Web.styles.css" asp-append-version="true" />
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+    <!-- Background ambience -->
+    <div class="uv-orb uv-orb-primary" aria-hidden="true"></div>
+    <div class="uv-orb uv-orb-secondary" aria-hidden="true"></div>
+    <div class="uv-orb uv-orb-accent" aria-hidden="true"></div>
+    <div class="uv-bg-gradient" aria-hidden="true"></div>
+
+    <!-- ═══════════════════════════════════════════
+         NAVBAR
+         ═══════════════════════════════════════════ -->
+    <header class="uv-navbar">
+        <div class="uv-navbar-inner">
+
+            <!-- Brand / Logo -->
+            <a class="uv-brand" asp-controller="Home" asp-action="Index">
+                <div class="uv-brand-text">
+                    <div class="uv-brand-name">D<span class="uv-brand-i">&#x131;</span>cemo<span class="uv-brand-q">?</span></div>
+                    <div class="uv-brand-tagline">Pronađi svoju utakmicu</div>
+                </div>
+            </a>
+
+            <!-- Desktop nav links -->
+            <nav class="uv-nav-links" aria-label="Main navigation">
+                <a asp-controller="Home" asp-action="Index"
+                   class="uv-nav-link @(controller == "Home" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                    </svg>
+                    Utakmice
+                </a>
+                <a asp-controller="Pitch" asp-action="Index"
+                   class="uv-nav-link @(controller == "Pitch" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+                    </svg>
+                    Tereni
+                </a>
+                <a asp-controller="Player" asp-action="Index"
+                   class="uv-nav-link @(controller == "Player" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    Igrači
+                </a>
+                <a asp-controller="Chat" asp-action="Index"
+                   class="uv-nav-link @(controller == "Chat" ? "active" : "")">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                    </svg>
+                    Chat
+                </a>
+            </nav>
+
+            <!-- Right: notifications + auth -->
+            <div class="uv-nav-actions">
+                @if (isLoggedIn)
+                {
+                    <!-- Bell -->
+                    <a asp-controller="Notification" asp-action="Index" class="uv-bell" title="Obavijesti">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                             stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                        </svg>
+                        <span class="uv-bell-badge" id="notif-badge"></span>
+                    </a>
+
+                    <!-- Avatar -->
+                    <a asp-area="Identity" asp-page="/Account/Manage/Index" class="uv-user-avatar" title="Moj profil">
+                        @initials
+                    </a>
+                }
+                else
+                {
+                    <a asp-area="Identity" asp-page="/Account/Login" class="uv-btn-ghost">Prijava</a>
+                    <a asp-area="Identity" asp-page="/Account/Register" class="uv-btn-primary">
+                        Registracija
+                    </a>
+                }
+            </div>
+
+        </div>
+    </header>
+
+    <!-- ═══════════════════════════════════════════
+         MAIN CONTENT
+         ═══════════════════════════════════════════ -->
+    <main class="uv-main" role="main">
+        @RenderBody()
+    </main>
+
+    <!-- ═══════════════════════════════════════════
+         FOOTER (desktop only)
+         ═══════════════════════════════════════════ -->
+    <footer class="uv-footer">
+        &copy; @DateTime.Now.Year Dic&#x131;cemo? &mdash;
+        Zagreb Pickup Soccer &mdash;
+        <a asp-controller="Home" asp-action="Privacy">Privatnost</a>
+    </footer>
+
+    <!-- ═══════════════════════════════════════════
+         BOTTOM NAV (mobile only)
+         ═══════════════════════════════════════════ -->
+    <nav class="uv-bottom-nav" aria-label="Mobile navigation">
+        <a asp-controller="Home" asp-action="Index"
+           class="uv-bottom-item @(controller == "Home" ? "active" : "")">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+            </svg>
+            <span>Utakmice</span>
+        </a>
+        <a asp-controller="Pitch" asp-action="Index"
+           class="uv-bottom-item @(controller == "Pitch" ? "active" : "")">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+            <span>Tereni</span>
+        </a>
+        <a asp-controller="Player" asp-action="Index"
+           class="uv-bottom-item @(controller == "Player" ? "active" : "")">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+            <span>Igrači</span>
+        </a>
+        <a asp-controller="Chat" asp-action="Index"
+           class="uv-bottom-item @(controller == "Chat" ? "active" : "")">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            <span>Chat</span>
+        </a>
+        @if (isLoggedIn)
+        {
+            <a asp-area="Identity" asp-page="/Account/Manage/Index"
+               class="uv-bottom-item @(controller == "Profile" ? "active" : "")">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                </svg>
+                <span>Profil</span>
+            </a>
+        }
+        else
+        {
+            <a asp-area="Identity" asp-page="/Account/Login"
+               class="uv-bottom-item">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                    <polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                <span>Prijava</span>
+            </a>
+        }
+    </nav>
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
